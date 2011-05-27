@@ -1,17 +1,15 @@
 package Statistics::CountAverage;
-use 5.008008;
 use strict;
 use warnings;
 
-
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use Time::HiRes qw(gettimeofday);
 
 sub new {
     my $class = shift;
-	my %args = @_;
-    my $self = bless \%args, $class;
-	$self->{len} ||= 10;
+	my $len = shift;
+    my $self = bless {}, $class;
+	$self->{len} = $len || 10;
 	$self->{count} = 0;
 	$self->{time} = 0;
 	$self->{ary} = [{count => 0, time => scalar gettimeofday(),diff => 0}];
@@ -64,16 +62,6 @@ sub avg {
 	my $self = shift;
 	return $self->{count}/@{$self->{ary}};
 }
-# список количестыва событий в каждом подсчете
-sub list_count {
-	my $self = shift;
-	return map {$_->{count}} @{$self->{ary}};
-}
-# список временных интервалов между посчетами
-sub list_diff {
-	my $self = shift;
-	return map {$_->{diff}} @{$self->{ary}};
-}
 sub stat {
 	my $self = shift;
 	return +{
@@ -95,7 +83,7 @@ Statistics::CountAverage - Perl extension for blah blah blah
 
   use Statistics::CountAverage;
   
-  my $avg = new Statistics::CountAverage(len => 100);
+  my $avg = new Statistics::CountAverage(100);
   $avg->count;
   ...
   $avg->count(10);
@@ -108,8 +96,7 @@ Statistics::CountAverage - Perl extension for blah blah blah
   
 =head1 DESCRIPTION
 
-
-Blah blah blah.
+accamulate number events and calculate averages
 
 =head1 FUNCTIONS
 
@@ -118,13 +105,36 @@ Blah blah blah.
 count number action
 
   $avg->count(10);
+  $avg->count; # default 1
 
 =head2 check(sec)
   
 return true  if elapset sec from last true
 
   $avg->check(5);
+  if($avg->check(5)){
+    # elapsed 5 sec for last true from check
+  }
 
+=head2 speed
+  
+calculate average summ of number in count per 1 second
+
+=head2 rate
+  
+calculate average number call count per 1 second
+
+=head2 avg
+  
+calculate average number of count per one call count
+
+=head2 stat
+  
+return hashref
+
+	speed => $avg->speed,
+	rate => $avg->rate,
+	avg => $avg->avg,
 
 =head1 SEE ALSO
 
